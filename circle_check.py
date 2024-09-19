@@ -3,7 +3,7 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 
-def contour_detec(image,data):
+def contour_detec(image,data,data_thres):
     # 寻找轮廓
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     contours, _ = cv2.findContours(gray_image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
@@ -20,16 +20,18 @@ def contour_detec(image,data):
         # 计算包围框
         x, y, w, h = cv2.boundingRect(contour)
         # 绘制包围框
-        cv2.rectangle(image, (x, y), (x + w, y + h), (0, 0, 255), 2)
+        # cv2.rectangle(image, (x, y), (x + w, y + h), (0, 0, 255), 2)
         # 截取npy数组中的原光子数
         npy_part = cut_npy(data, x, y, w, h)
         npy_part_list.append(npy_part)
         # print(npy_part)
         # 找出最大值
         lightest_ = np.max(npy_part)
+        if lightest_ < data_thres:
+            cv2.rectangle(image, (x, y), (x + w, y + h), (0, 0, 0), -1)
         # print(lightest_)
         # 保存图像
-        cv2.imwrite('contours.jpg', image)
+        cv2.imwrite('./clear/5.jpg', image)
     return npy_part_list
 
 def cut_npy(npy_data,x,y,w,h):
@@ -60,21 +62,25 @@ def circle_checking(area, perimeter,contour,image):
 
 if __name__ == '__main__':
     # 读取图像
-    image = cv2.imread("./sobel_data/0.png", 1)
-    npy_file_path = './npy_data/0.npy'
+    image = cv2.imread("./sobel_data/5.png", 1)
+    npy_file_path = './npy_data/5.npy'
     data = np.load(npy_file_path)
-    npy_list = contour_detec(image, data)
+    # 计算标准差以及均值
+    std_deviation = np.std(data)
+    data_mean = np.mean(data)
+    data_threshold = data_mean + 5 * std_deviation
+    print(data_threshold)
+    npy_list = contour_detec(image, data, data_threshold)
 
 
 
     # 显示结果
-    plt.figure(figsize=(10, 8))
-    plt.subplot(231), plt.imshow(npy_list[6]), plt.title('npy_list[6]')
-    plt.subplot(232), plt.imshow(npy_list[7]), plt.title('npy_list[7]')
-    plt.subplot(233), plt.imshow(npy_list[8]), plt.title('npy_list[8]')
-    plt.subplot(234), plt.imshow(npy_list[9]), plt.title('npy_list[9]')
-    plt.subplot(235), plt.imshow(npy_list[10]), plt.title('npy_list[10]')
-    plt.subplot(236), plt.imshow(npy_list[11]), plt.title('npy_list[11]')
-    plt.show()
+    # plt.figure(figsize=(10, 8))
+    # plt.subplot(231), plt.imshow(npy_list[6]), plt.title('npy_list[6]')
+    # plt.subplot(232), plt.imshow(npy_list[7]), plt.title('npy_list[7]')
+    # plt.subplot(233), plt.imshow(npy_list[8]), plt.title('npy_list[8]')
+    # plt.subplot(234), plt.imshow(npy_list[9]), plt.title('npy_list[9]')
+    # plt.subplot(235), plt.imshow(npy_list[10]), plt.title('npy_list[10]')
+    # plt.subplot(236), plt.imshow(npy_list[11]), plt.title('npy_list[11]')
+    # plt.show()
     # print(np.shape(gray_image))
-
