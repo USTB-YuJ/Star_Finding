@@ -1,3 +1,12 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# @FileName: fits2png.py
+# @Time : 2024/9/19 22:55
+# @Author : USTB_YuJia
+'''
+此文件将fits文件打开，取出其中光子数组信息存储为npy文件，并且将其二值化处理存储为png文件。（阈值为手动设置）
+'''
+
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
@@ -18,15 +27,10 @@ def transform_fit(path, name_id):
         data = hdulist[0].data
 
         hdulist.info()
-        # for key in header:
-            # print(key, header[key])
-
-        # np.save("./npy_data/" + str(name_id) + ".npy", data)
+        np.save("./npy_data/" + str(name_id) + ".npy", data)
 
         image = normalize_to_255(data)
-        print(np.shape(image))
         cv2.imwrite("./png_data_2/" + str(name_id) + ".png", image)
-        # print(image)
 
 if __name__ == "__main__":
 

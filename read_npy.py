@@ -1,10 +1,18 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# @FileName: read_npy.py
+# @Time : 2024/9/19 22:55
+# @Author : USTB_YuJia
+'''
+此文件打开存储的npy文件，进行初步的数据分析以及二值化可视化。
+'''
 import matplotlib.pyplot as plt
 import numpy as np
 import cv2
 import pylab as plt2
 
 def calculate_num(data):
-
+    # 取99.992%处的值作为阈值，进行二值化
     p9_value = np.percentile(data, 99.992)
     result = np.sum(data > p9_value)
     return p9_value, result
@@ -43,12 +51,9 @@ def thres_(data,threshold):
     data[data > threshold] = 255
     data[data <= threshold] = 0
 
-
-
 if __name__ == "__main__":
     # 设置.npy文件的路径
     npy_file_path = './npy_data/7.npy'
-
     # 加载.npy文件
     data = np.load(npy_file_path)
     data = data.astype(np.float32)
@@ -62,6 +67,5 @@ if __name__ == "__main__":
     thres, num = calculate_num(data)
     print("阈值=", thres)
     thres_(data, thres)
-    cv2.imwrite('./png_data_2/7.png', data)
     plt2.imshow(data)
     plt2.show()
